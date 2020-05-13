@@ -15,6 +15,7 @@ stages:
     pool:
       vmImage: 'ubuntu-16.04'
     steps:
+      # depends on docker file config to do the build. Dockerfile does not build front-end
     - task: Docker@2
       displayName: 'Build and push the image to container registry'
       inputs:
