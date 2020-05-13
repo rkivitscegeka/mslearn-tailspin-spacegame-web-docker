@@ -1,0 +1,40 @@
+az configure --defaults location=westeurope
+
+resourceSuffix=$RANDOM
+webName="tailspin-space-game-web-${resourceSuffix}"
+registryName="tailspinspacegame${resourceSuffix}"
+rgName='tailspin-space-game-rg'
+planName='tailspin-space-game-asp'
+
+az group create --name $rgName
+az acr create --name $registryName \
+  --resource-group $rgName \
+  --sku Standard \
+  --admin-enabled true
+az appservice plan create \
+  --name $planName \
+  --resource-group $rgName \
+  --sku B1 \
+  --is-linux
+az webapp create \
+  --name $webName \
+  --resource-group $rgName \
+  --plan $planName \
+  --deployment-container-image-name $registryName.azurecr.io/web:latest
+
+
+az webapp list \
+  --resource-group $rgName \
+  --query "[].{hostName: defaultHostName, state: state}" \
+  --output table
+HostName                                         State
+-----------------------------------------------  -------
+tailspin-space-game-web-19196.azurewebsites.net  Running
+
+az acr list \
+  --resource-group $rgName \
+  --query "[].{loginServer: loginServer}" \
+  --output table
+LoginServer
+---------------------------------
+tailspinspacegame19196.azurecr.io
